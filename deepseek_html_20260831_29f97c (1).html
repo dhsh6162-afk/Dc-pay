@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>DC PAY - Digital Banking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
+        body { background:#f0f4ff; color:#1e1e2a; padding:20px; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+        
+        .container { max-width:1000px; width:100%; margin:0 auto; background:#fff; border-radius:30px; box-shadow:0 20px 60px rgba(0,0,0,0.08); padding:30px; position:relative; overflow:hidden; min-height:90vh; display:flex; flex-direction:column; }
+        .container::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle at 30% 50%,rgba(135,206,235,0.05) 0%,transparent 50%),radial-gradient(circle at 70% 80%,rgba(155,107,255,0.05) 0%,transparent 50%); animation:bgFloat 20s ease-in-out infinite; z-index:0; pointer-events:none; }
+        @keyframes bgFloat { 0%,100% { transform:translate(0,0) rotate(0deg); } 50% { transform:translate(2%,2%) rotate(2deg); } }
+        .container>* { position:relative; z-index:1; }
+        
+        :root { --sky-light:#e0f0ff; --sky-medium:#87CEEB; --sky-dark:#4A90E2; --purple-light:#d9c9ff; --purple-medium:#9b6bff; --purple-dark:#6a3de8; --gradient-main:linear-gradient(145deg,#87CEEB,#9b6bff); --gradient-card:linear-gradient(145deg,#e0f0ff,#d9c9ff); --shadow-color:rgba(74,144,226,0.2); }
+
+        /* ===== NAVBAR ===== */
+        .navbar { display:flex; justify-content:space-between; align-items:center; padding:8px 0 15px 0; border-bottom:1px solid rgba(155,107,255,0.15); flex-wrap:wrap; gap:10px; }
+        .logo { font-size:28px; font-weight:800; background:var(--gradient-main); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; cursor:pointer; transition:0.3s; }
+        .logo:hover { transform:scale(1.05); }
+        .logo i { margin-right:8px; }
+        .nav-badge { background:var(--gradient-main); color:#fff; padding:6px 16px; border-radius:50px; font-size:12px; font-weight:600; box-shadow:0 4px 12px var(--shadow-color); animation:pulseGlow 3s ease-in-out infinite; }
+        @keyframes pulseGlow { 0%,100% { box-shadow:0 4px 12px var(--shadow-color); } 50% { box-shadow:0 4px 30px rgba(155,107,255,0.4); } }
+        .auth-buttons { display:flex; gap:10px; flex-wrap:wrap; }
+        .auth-btn { padding:8px 20px; border-radius:50px; border:none; font-weight:700; cursor:pointer; transition:all 0.3s; font-size:13px; }
+        .auth-btn.login { background:var(--gradient-main); color:#fff; box-shadow:0 4px 12px var(--shadow-color); }
+        .auth-btn.register { background:#fff; color:var(--purple-dark); border:2px solid var(--purple-medium); }
+        .auth-btn:hover { opacity:0.8; transform:scale(0.95); }
+        .auth-btn.logout { background:#ff4444; color:#fff; }
+        .user-badge { display:flex; align-items:center; gap:10px; }
+        .user-badge span { color:var(--purple-dark); font-weight:600; }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-bar { display:flex; justify-content:space-between; align-items:center; margin:15px 0 20px; position:relative; padding:0 5px; }
+        .progress-bar::before { content:''; position:absolute; top:50%; left:25px; right:25px; height:3px; background:#e0e0e0; transform:translateY(-50%); z-index:1; border-radius:3px; }
+        .progress-step { display:flex; flex-direction:column; align-items:center; z-index:2; background:#fff; padding:0 8px; }
+        .progress-step .circle { width:36px; height:36px; border-radius:50%; background:#e0e0e0; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:#888; transition:all 0.5s; border:3px solid #e0e0e0; }
+        .progress-step.active .circle { background:var(--purple-medium); border-color:var(--purple-dark); color:#fff; transform:scale(1.1); box-shadow:0 0 20px rgba(155,107,255,0.3); }
+        .progress-step.done .circle { background:#4CAF50; border-color:#4CAF50; color:#fff; }
+        .progress-step .label { font-size:0.55rem; margin-top:4px; color:#888; font-weight:600; text-align:center; }
+        .progress-step.active .label { color:var(--purple-dark); }
+        .progress-step.done .label { color:#4CAF50; }
+
+        /* ===== PAGE SYSTEM ===== */
+        .page { display:none; animation:fadePage 0.5s ease; flex:1; }
+        .page.active { display:flex; flex-direction:column; justify-content:center; }
+        @keyframes fadePage { from { opacity:0; transform:scale(0.97) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+
+        .section-title { font-size:1.6rem; font-weight:700; margin:10px 0 5px; background:var(--gradient-main); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; display:inline-block; }
+        .section-sub { color:#4a4a62; margin-bottom:15px; font-size:1rem; }
+        .btn-primary { background:var(--gradient-main); border:none; color:#fff; padding:12px 28px; border-radius:60px; font-weight:700; font-size:0.95rem; cursor:pointer; transition:all 0.3s; box-shadow:0 6px 16px var(--shadow-color); }
+        .btn-primary:hover:not(:disabled) { opacity:0.85; transform:scale(0.97); }
+        .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
+        .btn-secondary { background:#fff; border:2px solid var(--purple-medium); color:var(--purple-dark); padding:12px 28px; border-radius:60px; font-weight:700; font-size:0.95rem; cursor:pointer; transition:all 0.3s; }
+        .btn-secondary:hover { background:var(--purple-light); transform:scale(0.97); }
+
+        /* ===== PAGE 1: AUTH ===== */
+        .auth-box { max-width:420px; margin:0 auto; width:100%; }
+        .auth-box h2 { font-size:1.8rem; margin-bottom:5px; }
+        .auth-box p { color:#888; margin-bottom:15px; }
+        .auth-box input { width:100%; padding:12px 18px; margin:8px 0; border:2px solid #e0e0e0; border-radius:60px; font-size:1rem; transition:0.3s; }
+        .auth-box input:focus { border-color:var(--purple-medium); outline:none; box-shadow:0 0 0 4px rgba(155,107,255,0.15); }
+        .auth-box .btn-primary { width:100%; padding:14px; }
+        .auth-switch { text-align:center; margin-top:12px; color:var(--purple-medium); cursor:pointer; font-weight:600; }
+        .auth-switch:hover { text-decoration:underline; }
+
+        /* ===== PAGE 2: ACCOUNT DETAILS ===== */
+        .details-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:650px; margin:0 auto; width:100%; }
+        .details-grid .field { display:flex; flex-direction:column; }
+        .details-grid .field label { font-weight:600; font-size:0.8rem; color:#555; margin-bottom:3px; }
+        .details-grid .field label .required { color:#ff4444; }
+        .details-grid .field input, .details-grid .field select { padding:10px 16px; border:2px solid #e0e0e0; border-radius:60px; font-size:0.9rem; transition:0.3s; background:#fff; width:100%; }
+        .details-grid .field input:focus, .details-grid .field select:focus { border-color:var(--purple-medium); outline:none; box-shadow:0 0 0 4px rgba(155,107,255,0.15); }
+        .details-grid .field input.valid { border-color:#4CAF50; background:#e8f5e9; }
+        .details-grid .field input.invalid { border-color:#ff4444; background:#ffebee; }
+        .details-grid .field input:disabled { background:#f5f5f5; color:#333; }
+        .details-grid .field select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 16px center; }
+        .details-grid .field .hint { font-size:0.7rem; color:#888; margin-top:2px; }
+        .details-grid .field-full { grid-column:1/-1; }
+        @media (max-width:650px) { .details-grid { grid-template-columns:1fr; } }
+
+        /* ===== PAGE 3: TIER ===== */
+        .tier-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin:10px 0; }
+        .tier-card { background:#fff; border-radius:20px; padding:18px; border:2px solid rgba(155,107,255,0.10); text-align:center; transition:all 0.3s; cursor:pointer; }
+        .tier-card:hover { transform:translateY(-5px); box-shadow:0 15px 35px var(--shadow-color); }
+        .tier-card.popular { border-color:var(--purple-medium); background:var(--gradient-card); }
+        .tier-card.selected { border:3px solid var(--purple-dark); box-shadow:0 0 30px rgba(106,61,232,0.2); transform:scale(1.02); }
+        .tier-card h4 { font-size:1.1rem; }
+        .tier-card .price { font-size:1.8rem; font-weight:800; color:var(--purple-dark); margin:8px 0; }
+        .tier-card .price i { font-size:1.2rem; color:var(--purple-medium); }
+        .tier-card ul { list-style:none; text-align:left; margin:8px 0; font-size:0.8rem; }
+        .tier-card ul li { padding:4px 0; border-bottom:1px solid #eee; }
+        .tier-card ul li i { color:var(--purple-medium); margin-right:8px; }
+        .amount-display { background:var(--gradient-card); padding:10px 20px; border-radius:60px; font-size:1.2rem; font-weight:700; color:var(--purple-dark); display:inline-flex; align-items:center; gap:10px; border:2px solid var(--purple-medium); margin:8px 0; }
+        .amount-display i { color:var(--purple-medium); }
+        .amount-display .tier-name { font-size:0.7rem; font-weight:400; color:#666; background:#fff; padding:2px 10px; border-radius:30px; }
+
+        /* ===== PAGE 4: PAYMENT ===== */
+        .payment-box { background:#fff; border-radius:20px; padding:20px; border:2px solid var(--purple-medium); box-shadow:0 8px 24px var(--shadow-color); max-width:600px; margin:0 auto; width:100%; }
+        .upi-id-box { background:var(--sky-light); padding:10px 18px; border-radius:60px; display:inline-flex; align-items:center; gap:10px; font-weight:600; font-size:1rem; border:2px dashed var(--purple-medium); }
+        .upi-id-box i { color:var(--purple-medium); }
+        .copy-btn { background:var(--gradient-main); border:none; color:#fff; padding:4px 12px; border-radius:40px; font-size:0.7rem; font-weight:600; cursor:pointer; transition:0.3s; }
+        .copy-btn:hover { opacity:0.8; }
+        .upi-pay-btn { background:var(--gradient-main); border:none; color:#fff; padding:12px 30px; border-radius:60px; font-weight:700; font-size:1rem; cursor:pointer; box-shadow:0 6px 20px var(--shadow-color); transition:all 0.3s; display:inline-flex; align-items:center; gap:8px; }
+        .upi-pay-btn:hover:not(:disabled) { opacity:0.85; transform:scale(0.97); }
+
+        .utr-section { margin-top:15px; padding-top:15px; border-top:2px dashed rgba(155,107,255,0.2); }
+        .utr-section label { font-weight:600; display:block; margin-bottom:6px; font-size:0.95rem; }
+        .utr-section label i { color:var(--purple-medium); margin-right:6px; }
+        .utr-input-group { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+        .utr-input-group input { flex:1; min-width:150px; padding:10px 18px; border-radius:60px; border:2px solid #e0e0e0; font-size:0.95rem; transition:0.3s; background:#fafafa; }
+        .utr-input-group input:focus { border-color:var(--purple-medium); outline:none; box-shadow:0 0 0 4px rgba(155,107,255,0.15); }
+        .utr-input-group input.valid { border-color:#4CAF50; background:#e8f5e9; }
+        .utr-input-group input.invalid { border-color:#ff4444; background:#ffebee; }
+        .utr-input-group .btn-primary { width:auto; padding:10px 25px; }
+        .status-msg { margin-top:10px; padding:10px 16px; border-radius:16px; display:none; font-weight:600; animation:fadePage 0.3s ease; }
+        .status-msg.show { display:block; }
+
+        /* ===== PAGE 5: DASHBOARD ===== */
+        .dash-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin:10px 0; }
+        .dash-card { padding:14px; border-radius:18px; text-align:center; transition:0.3s; }
+        .dash-card:hover { transform:translateY(-3px); }
+        .dash-card .num { font-size:1.6rem; font-weight:800; }
+        .dash-card .lbl { font-size:0.7rem; color:#888; text-transform:uppercase; letter-spacing:0.5px; }
+
+        .live-transactions { background:#fff; border-radius:18px; padding:15px; border:1px solid rgba(155,107,255,0.12); max-height:200px; overflow-y:auto; margin:8px 0; }
+        .live-transactions::-webkit-scrollbar { width:4px; }
+        .live-transactions::-webkit-scrollbar-thumb { background:var(--purple-medium); border-radius:10px; }
+        .tx-item { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f0f0f0; animation:slideInTx 0.4s ease; }
+        .tx-item:last-child { border-bottom:none; }
+        @keyframes slideInTx { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+        .tx-item .tx-left { display:flex; align-items:center; gap:8px; }
+        .tx-item .tx-left i { font-size:0.9rem; }
+        .tx-item .tx-left .credit { color:#4CAF50; }
+        .tx-item .tx-left .debit { color:#ff4444; }
+        .tx-item .tx-amount { font-weight:700; font-size:0.95rem; }
+        .tx-item .tx-time { font-size:0.65rem; color:#888; }
+        .tx-item .tx-status { font-size:0.6rem; padding:2px 10px; border-radius:30px; font-weight:600; }
+        .tx-status.success { background:#e8f5e9; color:#2e7d32; }
+        .tx-status.pending { background:#fff3cd; color:#e65100; }
+
+        .commission-box { background:linear-gradient(145deg,#e8f5e9,#c8e6c9); padding:14px 20px; border-radius:18px; border-left:5px solid #4CAF50; margin:8px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; animation:pulseCommission 3s ease-in-out infinite; }
+        @keyframes pulseCommission { 0%,100% { box-shadow:0 0 0 rgba(76,175,80,0); } 50% { box-shadow:0 0 30px rgba(76,175,80,0.15); } }
+        .commission-box .label { font-weight:600; color:#2e7d32; font-size:0.9rem; }
+        .commission-box .amount { font-size:1.3rem; font-weight:800; color:#1b5e20; }
+
+        .withdraw-box { background:var(--gradient-card); padding:15px 20px; border-radius:18px; margin:10px 0; }
+        .withdraw-box .input-group { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+        .withdraw-box .input-group input { flex:1; min-width:120px; padding:10px 16px; border-radius:60px; border:2px solid #e0e0e0; font-size:0.9rem; transition:0.3s; }
+        .withdraw-box .input-group input:focus { border-color:var(--purple-medium); outline:none; box-shadow:0 0 0 4px rgba(155,107,255,0.15); }
+        .withdraw-box .btn-primary { width:auto; padding:10px 25px; font-size:0.9rem; }
+
+        /* ===== NAV BUTTONS ===== */
+        .nav-buttons { display:flex; justify-content:space-between; gap:12px; margin:12px 0 5px; flex-wrap:wrap; }
+        .nav-btn { padding:10px 25px; border-radius:60px; border:none; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.3s; display:inline-flex; align-items:center; gap:6px; }
+        .nav-btn.prev { background:#e8e8e8; color:#555; }
+        .nav-btn.prev:hover:not(:disabled) { background:#d5d5d5; transform:translateX(-3px); }
+        .nav-btn.next { background:var(--gradient-main); color:#fff; box-shadow:0 6px 20px var(--shadow-color); }
+        .nav-btn.next:disabled { opacity:0.5; cursor:not-allowed; }
+        .nav-btn.next:hover:not(:disabled) { opacity:0.85; transform:scale(0.97); }
+
+        .live-time { background:var(--gradient-card); padding:6px 16px; border-radius:60px; display:inline-flex; align-items:center; gap:10px; font-weight:600; font-size:0.8rem; border:1px solid var(--purple-medium); animation:pulseBorder 2s ease-in-out infinite; margin-bottom:8px; }
+        @keyframes pulseBorder { 0%,100% { border-color:var(--purple-medium); } 50% { border-color:var(--sky-dark); } }
+        .live-time i { color:#ff4444; animation:blink 1s infinite; }
+        @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+
+        .toast { position:fixed; bottom:25px; right:25px; background:#1e1e2a; color:#fff; padding:12px 22px; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,0.3); z-index:2000; animation:toastSlide 0.5s ease; max-width:320px; backdrop-filter:blur(10px); font-size:0.9rem; }
+        @keyframes toastSlide { from { opacity:0; transform:translateX(80px) scale(0.9); } to { opacity:1; transform:translateX(0) scale(1); } }
+        .toast.success { border-left:5px solid #4CAF50; }
+        .toast.error { border-left:5px solid #ff4444; }
+        .toast.info { border-left:5px solid var(--purple-medium); }
+
+        .footer { text-align:center; padding-top:12px; border-top:1px solid rgba(155,107,255,0.10); color:#5a5a7a; font-size:0.75rem; margin-top:10px; }
+
+        .hidden { display:none !important; }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav { display:flex; justify-content:center; gap:25px; padding:12px 0 5px; border-top:1px solid rgba(155,107,255,0.10); margin-top:10px; }
+        .bottom-nav a { color:#888; text-decoration:none; font-size:0.8rem; font-weight:600; transition:0.3s; cursor:pointer; display:flex; align-items:center; gap:6px; }
+        .bottom-nav a:hover { color:var(--purple-dark); }
+        .bottom-nav a.active { color:var(--purple-dark); }
+
+        @media (max-width:700px) {
+            .container { padding:15px; min-height:95vh; }
+            .dash-grid { grid-template-columns:1fr 1fr; }
+            .tier-grid { grid-template-columns:1fr; }
+            .details-grid { grid-template-columns:1fr; }
+            .nav-buttons { flex-direction:column; }
+            .nav-btn { justify-content:center; }
+            .utr-input-group { flex-direction:column; }
+            .utr-input-group .btn-primary { width:100%; }
+            .withdraw-box .input-group { flex-direction:column; }
+            .withdraw-box .input-group .btn-primary { width:100%; }
+            .navbar { flex-direction:column; align-items:stretch; }
+            .auth-buttons { justify-content:center; }
+            .progress-bar { flex-wrap:wrap; gap:5px; justify-content:center; }
+            .progress-bar::before { display:none; }
+            .bottom-nav { gap:12px; flex-wrap:wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="logo" onclick="goToPage('home')"><i class="fas fa-bolt"></i> DC PAY</div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div class="nav-badge"><i class="fas fa-shield-alt"></i> Digital Banking</div>
+            <div id="authButtons">
+                <button class="auth-btn login" onclick="openModal('login')"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <button class="auth-btn register" onclick="openModal('register')"><i class="fas fa-user-plus"></i> Register</button>
+            </div>
+            <div id="userInfo" style="display:none;" class="user-badge">
+                <span id="displayName">User</span>
+                <button class="auth-btn logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== PROGRESS BAR ===== -->
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-step active" data-step="1"><div class="circle">1</div><div class="label">Account</div></div>
+        <div class="progress-step" data-step="2"><div class="circle">2</div><div class="label">Details</div></div>
+        <div class="progress-step" data-step="3"><div class="circle">3</div><div class="label">Tier</div></div>
+        <div class="progress-step" data-step="4"><div class="circle">4</div><div class="label">Payment</div></div>
+        <div class="progress-step" data-step="5"><div class="circle">5</div><div class="label">Dashboard</div></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== PAGE 1: LOGIN/REGISTER ===== -->
+    <!-- ============================================================ -->
+    <div class="page active" id="page-home">
+        <div style="text-align:center; margin-bottom:15px;">
+            <h1 style="font-size:2.5rem; font-weight:800; background:var(--gradient-main); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Welcome to DC PAY</h1>
+            <p style="color:#555; font-size:1.1rem;">Secure • Fast • Intelligent Banking</p>
+        </div>
+
+        <div class="auth-box">
+            <div id="authFormContainer">
+                <h2 id="authTitle">🔐 Login</h2>
+                <p id="authSub">Enter your credentials to access your account</p>
+                <form id="authForm" onsubmit="return handleAuth(event)">
+                    <input type="email" id="authEmail" placeholder="Email Address" required>
+                    <input type="password" id="authPassword" placeholder="Password" required minlength="4">
+                    <input type="text" id="authName" placeholder="Full Name" style="display:none;">
+                    <button type="submit" class="btn-primary" id="authSubmitBtn">Login</button>
+                </form>
+                <p class="auth-switch" id="switchAuthText" onclick="switchAuth()">Don't have an account? Register</p>
+            </div>
+        </div>
+
+        <div class="footer"><p>&copy; 2026 DC PAY - Digital Banking</p></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== PAGE 2: ACCOUNT DETAILS ===== -->
+    <!-- ============================================================ -->
+    <div class="page" id="page-details">
+        <h2 class="section-title">📋 Account Details</h2>
+        <p class="section-sub">Please verify your account information</p>
+
+        <div class="details-grid">
+            <div class="field field-full">
+                <label>Account Holder Name <span class="required">*</span></label>
+                <input type="text" id="accHolder" placeholder="As per bank records" oninput="validateDetails()">
+                <span class="hint">Enter name as per your bank account</span>
+            </div>
+            <div class="field">
+                <label>Bank Name <span class="required">*</span></label>
+                <select id="accBank" onchange="validateDetails()">
+                    <option value="">Select your bank</option>
+                    <option value="State Bank of India">State Bank of India</option>
+                    <option value="HDFC Bank">HDFC Bank</option>
+                    <option value="ICICI Bank">ICICI Bank</option>
+                    <option value="Axis Bank">Axis Bank</option>
+                    <option value="Punjab National Bank">Punjab National Bank</option>
+                    <option value="Bank of Baroda">Bank of Baroda</option>
+                    <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+                    <option value="Yes Bank">Yes Bank</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Account Number <span class="required">*</span></label>
+                <input type="text" id="accNumber" placeholder="Enter account number" maxlength="16" oninput="validateDetails()">
+                <span class="hint">Must be 9-16 digits</span>
+            </div>
+            <div class="field">
+                <label>Confirm Account Number <span class="required">*</span></label>
+                <input type="text" id="accConfirm" placeholder="Re-enter account number" maxlength="16" oninput="validateDetails()">
+            </div>
+            <div class="field">
+                <label>IFSC Code <span class="required">*</span></label>
+                <input type="text" id="accIfsc" placeholder="E.G. HDFC0001234" maxlength="11" oninput="validateDetails()">
+                <span class="hint">11 characters (letters & numbers)</span>
+            </div>
+            <div class="field">
+                <label>Account Type <span class="required">*</span></label>
+                <select id="accType" onchange="validateDetails()">
+                    <option value="Savings">Savings</option>
+                    <option value="Current">Current</option>
+                    <option value="Salary">Salary</option>
+                    <option value="NRI">NRI</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>ATM/Debit Card Number</label>
+                <input type="text" id="accCard" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+                <span class="hint">Optional - 16 digits</span>
+            </div>
+            <div class="field">
+                <label>Expiry Date</label>
+                <input type="text" id="accExpiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+                <span class="hint">Optional - MM/YY</span>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin:10px 0;">
+            <div style="background:#e8f5e9; padding:10px 20px; border-radius:12px; display:inline-block; font-size:0.85rem; color:#2e7d32;">
+                <i class="fas fa-shield-alt"></i> Your information is secure and encrypted
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-btn prev" onclick="goToPage('home')"><i class="fas fa-arrow-left"></i> Back</button>
+            <button class="nav-btn next" id="detailsNextBtn" disabled onclick="saveDetailsAndNext()">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== PAGE 3: SELECT TIER ===== -->
+    <!-- ============================================================ -->
+    <div class="page" id="page-tier">
+        <h2 class="section-title">💰 Select Account Tier</h2>
+        <p class="section-sub">Choose your plan to get started</p>
+
+        <div class="tier-grid">
+            <div class="tier-card" onclick="selectTier('Savings',5000,this)">
+                <span style="background:var(--purple-medium);color:#fff;padding:2px 12px;border-radius:30px;font-size:0.7rem;">⭐ Popular</span>
+                <h4>Savings Account</h4>
+                <div class="price"><i class="fas fa-rupee-sign"></i> 5,000</div>
+                <ul><li><i class="fas fa-check"></i> 10+ accounts</li><li><i class="fas fa-check"></i> 17 withdrawals/month</li><li><i class="fas fa-check"></i> 24/7 Support</li></ul>
+            </div>
+            <div class="tier-card" onclick="selectTier('Current',10000,this)">
+                <h4>Current Account</h4>
+                <div class="price"><i class="fas fa-rupee-sign"></i> 10,000</div>
+                <ul><li><i class="fas fa-check"></i> 20+ accounts</li><li><i class="fas fa-check"></i> 24hr support</li><li><i class="fas fa-check"></i> Priority Support</li></ul>
+            </div>
+            <div class="tier-card popular" onclick="selectTier('Corporate',15000,this)">
+                <span style="background:var(--purple-dark);color:#fff;padding:2px 12px;border-radius:30px;font-size:0.7rem;">🏢 Corporate</span>
+                <h4>Corporate Account</h4>
+                <div class="price"><i class="fas fa-rupee-sign"></i> 15,000</div>
+                <ul><li><i class="fas fa-check"></i> Unlimited accounts</li><li><i class="fas fa-check"></i> 42 withdrawals/month</li><li><i class="fas fa-check"></i> Advanced Analytics</li></ul>
+            </div>
+        </div>
+
+        <div style="text-align:center;">
+            <div class="amount-display"><i class="fas fa-rupee-sign"></i><span id="selectedAmountDisplay">0</span><span class="tier-name" id="selectedTierDisplay">Select a tier</span></div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-btn prev" onclick="goToPage('details')"><i class="fas fa-arrow-left"></i> Back</button>
+            <button class="nav-btn next" id="tierNextBtn" disabled onclick="goToPage('payment')">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== PAGE 4: PAYMENT + UTR ===== -->
+    <!-- ============================================================ -->
+    <div class="page" id="page-payment">
+        <h2 class="section-title">💳 Make Payment</h2>
+        <p class="section-sub">Pay using UPI and verify with UTR</p>
+
+        <div class="payment-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                <h3 style="font-size:1.2rem; background:var(--gradient-main); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;"><i class="fas fa-qrcode"></i> Payment Details</h3>
+                <span style="background:var(--sky-light); padding:4px 14px; border-radius:40px; font-weight:600; font-size:0.8rem;">PhonePe GPay Paytm</span>
+            </div>
+
+            <div class="upi-id-box">
+                <i class="fas fa-mobile-alt"></i>
+                <span>UPI ID: <strong>Deewuuu01@ptyes</strong></span>
+                <button class="copy-btn" onclick="copyUPI()"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+
+            <div style="margin:12px 0; display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
+                <div class="amount-display" style="margin:0; font-size:1.1rem; padding:8px 18px;">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span id="paymentAmount">0</span>
+                    <span class="tier-name" id="paymentTierName">Not selected</span>
+                </div>
+                <button class="upi-pay-btn" onclick="payWithUPI()" id="payNowBtn" style="padding:10px 25px; font-size:0.95rem;">
+                    <i class="fas fa-credit-card"></i> Pay Now
+                </button>
+            </div>
+
+            <div id="paymentStatus" class="status-msg"></div>
+
+            <!-- UTR Section -->
+            <div class="utr-section">
+                <label><i class="fas fa-receipt"></i> Verify Payment (UTR Number)</label>
+                <div class="utr-input-group">
+                    <input type="text" id="utrInput" placeholder="Enter UTR number..." oninput="validateUTR(this.value)">
+                    <button class="btn-primary" id="verifyUtrBtn" disabled onclick="verifyUTR()" style="padding:10px 25px;"><i class="fas fa-check-circle"></i> Verify UTR</button>
+                </div>
+                <div id="utrStatus" class="status-msg"></div>
+                <div style="margin-top:6px; font-size:0.75rem; color:#888;">
+                    <i class="fas fa-info-circle"></i> Enter UTR received after UPI payment
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-btn prev" onclick="goToPage('tier')"><i class="fas fa-arrow-left"></i> Back</button>
+            <button class="nav-btn next" id="paymentNextBtn" disabled onclick="goToPage('dashboard')">Go to Dashboard <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== PAGE 5: DASHBOARD ===== -->
+    <!-- ============================================================ -->
+    <div class="page" id="page-dashboard">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <h2 class="section-title" style="margin:0;">🏦 Dashboard</h2>
+            <div class="live-time" style="margin:0; padding:5px 14px; font-size:0.75rem;">
+                <i class="fas fa-circle"></i>
+                <span id="dashboardTime">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Account Info -->
+        <div style="background:var(--gradient-card); padding:10px 16px; border-radius:16px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; font-size:0.8rem;">
+            <span><strong>👤</strong> <span id="dashHolder">-</span></span>
+            <span><strong>🏦</strong> <span id="dashBank">-</span></span>
+            <span><strong>🔢</strong> <span id="dashAccNo">-</span></span>
+            <span><strong>📋</strong> <span id="dashIfsc">-</span></span>
+            <span><strong>💳</strong> <span id="dashCard">-</span></span>
+        </div>
+
+        <!-- Balance Cards -->
+        <div class="dash-grid">
+            <div class="dash-card" style="background:var(--gradient-card);">
+                <div class="lbl">Total Balance</div>
+                <div class="num" style="color:var(--purple-dark);">₹<span id="dashBalance">0</span></div>
+            </div>
+            <div class="dash-card" style="background:#e8f5e9;">
+                <div class="lbl">Available</div>
+                <div class="num" style="color:#2e7d32;">₹<span id="dashAvailable">0</span></div>
+            </div>
+            <div class="dash-card" style="background:#fff3cd;">
+                <div class="lbl">Account Tier</div>
+                <div class="num" style="font-size:1.1rem; color:#e65100;" id="dashTier">Not Selected</div>
+            </div>
+        </div>
+
+        <!-- Commission Box - Live Update -->
+        <div class="commission-box">
+            <div>
+                <div class="label"><i class="fas fa-percent" style="color:#2e7d32;"></i> Commission Earnings (5%)</div>
+                <div style="font-size:0.7rem; color:#555;">Earned on every deposit | Live</div>
+            </div>
+            <div>
+                <div class="amount">₹<span id="commissionAmount">0</span></div>
+                <div style="font-size:0.65rem; color:#888; text-align:right;">Total earned</div>
+            </div>
+        </div>
+
+        <!-- Live Transactions - Auto Update Every 3-4 sec -->
+        <h3 style="margin:8px 0 5px; font-size:1rem;"><i class="fas fa-history" style="color:var(--purple-medium);"></i> Live Transactions <span style="font-size:0.7rem; color:#888; font-weight:400;">(Auto-updates every 3-4 sec)</span></h3>
+        <div class="live-transactions" id="transactionList">
+            <div style="text-align:center; color:#888; padding:12px; font-size:0.9rem;">
+                <i class="fas fa-clock" style="font-size:1.2rem; display:block; margin-bottom:5px;"></i>
+                No transactions yet. Waiting for live updates...
+            </div>
+        </div>
+
+        <!-- Withdraw -->
+        <h3 style="margin:8px 0 5px; font-size:1rem;"><i class="fas fa-arrow-up" style="color:#ff4444;"></i> Withdraw Funds</h3>
+        <div class="withdraw-box">
+            <div class="input-group">
+                <input type="number" id="withdrawAmount" placeholder="Amount (₹)" min="100">
+                <input type="text" id="withdrawUpi" placeholder="Your UPI ID">
+                <button class="btn-primary" onclick="withdrawFunds()" style="padding:10px 25px; font-size:0.9rem;"><i class="fas fa-arrow-up"></i> Withdraw</button>
+            </div>
+            <div id="withdrawStatus" class="status-msg"></div>
+            <div style="font-size:0.7rem; color:#888; margin-top:6px;">
+                <i class="fas fa-info-circle"></i> Min ₹100 | Processing: 2-5 min
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <a class="active" onclick="goToPage('home')"><i class="fas fa-home"></i> Home</a>
+            <a onclick="goToPage('dashboard')"><i class="fas fa-exchange-alt"></i> Transactions</a>
+            <a onclick="goToPage('details')"><i class="fas fa-user"></i> Profile</a>
+        </div>
+
+        <div class="footer"><p>&copy; 2026 DC PAY - Digital Banking</p></div>
+    </div>
+
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toastContainer"></div>
+
+<script>
+    // ===== STATE =====
+    let currentUser = null;
+    let authMode = 'login';
+    let selectedTier = null;
+    let selectedAmount = 0;
+    let utrVerified = false;
+    let paymentDone = false;
+    let balance = 5000; // Starting balance
+    let commission = 0;
+    let transactions = [];
+    let accountDetails = { holder: '', bank: '', number: '', confirm: '', ifsc: '', type: 'Savings', card: '', expiry: '' };
+    let liveTxInterval = null;
+
+    // ===== TOAST =====
+    function showToast(msg, type = 'info') {
+        const c = document.getElementById('toastContainer');
+        const t = document.createElement('div');
+        t.className = 'toast ' + type;
+        t.innerHTML = msg;
+        c.appendChild(t);
+        setTimeout(() => {
+            t.style.opacity = '0';
+            t.style.transform = 'translateX(80px)';
+            setTimeout(() => t.remove(), 500);
+        }, 4000);
+    }
+
+    // ===== LIVE TIME =====
+    function updateLiveTime() {
+        const now = new Date();
+        const str = now.toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        document.getElementById('dashboardTime').textContent = str;
+    }
+    setInterval(updateLiveTime, 1000);
+    updateLiveTime();
+
+    // ===== PAGE NAVIGATION =====
+    function goToPage(page) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + page).classList.add('active');
+        
+        const pageMap = { 'home':1, 'details':2, 'tier':3, 'payment':4, 'dashboard':5 };
+        const step = pageMap[page] || 1;
+        document.querySelectorAll('.progress-step').forEach(el => {
+            const s = parseInt(el.dataset.step);
+            el.classList.remove('active', 'done');
+            if (s === step) el.classList.add('active');
+            else if (s < step) el.classList.add('done');
+        });
+
+        if (page === 'payment') {
+            document.getElementById('paymentAmount').textContent = selectedAmount.toLocaleString();
+            document.getElementById('paymentTierName').textContent = selectedTier || 'Not selected';
+        }
+        if (page === 'dashboard') {
+            updateDashboard();
+            startLiveTransactions();
+        } else {
+            stopLiveTransactions();
+        }
+        if (page === 'details') validateDetails();
+        
+        // Update bottom nav
+        document.querySelectorAll('.bottom-nav a').forEach(a => a.classList.remove('active'));
+        if (page === 'home') document.querySelector('.bottom-nav a:nth-child(1)')?.classList.add('active');
+        if (page === 'dashboard') document.querySelector('.bottom-nav a:nth-child(2)')?.classList.add('active');
+        if (page === 'details') document.querySelector('.bottom-nav a:nth-child(3)')?.classList.add('active');
+    }
+
+    // ===== LIVE TRANSACTIONS - Auto every 3-4 sec =====
+    function startLiveTransactions() {
+        stopLiveTransactions();
+        // Generate first transaction immediately
+        generateLiveTransaction();
+        liveTxInterval = setInterval(generateLiveTransaction, getRandomInterval());
+    }
+
+    function stopLiveTransactions() {
+        if (liveTxInterval) {
+            clearInterval(liveTxInterval);
+            liveTxInterval = null;
+        }
+    }
+
+    function getRandomInterval() {
+        return Math.floor(Math.random() * (4000 - 3000 + 1)) + 3000; // 3-4 seconds
+    }
+
+    function generateLiveTransaction() {
+        if (!currentUser) return;
+        
+        const types = ['Deposit', 'Withdrawal', 'Transfer', 'Payment', 'Refund'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        const amount = Math.floor(Math.random() * 5000) + 100;
+        const isCredit = ['Deposit', 'Refund'].includes(type);
+        const notes = {
+            'Deposit': 'Salary credit',
+            'Withdrawal': 'ATM withdrawal',
+            'Transfer': 'UPI transfer',
+            'Payment': 'Bill payment',
+            'Refund': 'Refund processed'
+        };
+        
+        const tx = {
+            id: Date.now(),
+            type: type,
+            amount: amount,
+            note: notes[type] || 'Transaction',
+            time: new Date().toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', second:'2-digit' }),
+            status: Math.random() > 0.2 ? 'success' : 'pending'
+        };
+        
+        transactions.unshift(tx);
+        if (transactions.length > 50) transactions.pop();
+        
+        // Update balance
+        if (isCredit) {
+            balance += amount;
+            commission += Math.round(amount * 0.05);
+        } else {
+            if (balance >= amount) {
+                balance -= amount;
+            } else {
+                // If insufficient, make it a credit transaction
+                tx.type = 'Deposit';
+                tx.note = 'Auto-credit adjustment';
+                balance += amount;
+                commission += Math.round(amount * 0.05);
+            }
+        }
+        
+        updateUserData();
+        updateDashboard();
+        showToast('🔄 New transaction: ' + type + ' ₹' + amount.toLocaleString(), 'info');
+        
+        // Reset interval with random time
+        stopLiveTransactions();
+        liveTxInterval = setInterval(generateLiveTransaction, getRandomInterval());
+    }
+
+    // ===== AUTH =====
+    function openModal(mode) {
+        authMode = mode;
+        const title = document.getElementById('authTitle');
+        const sub = document.getElementById('authSub');
+        const nameField = document.getElementById('authName');
+        const submitBtn = document.getElementById('authSubmitBtn');
+        const switchText = document.getElementById('switchAuthText');
+        
+        if (mode === 'login') {
+            title.textContent = '🔐 Login';
+            sub.textContent = 'Enter your credentials to access your account';
+            nameField.style.display = 'none';
+            submitBtn.textContent = 'Login';
+            switchText.textContent = "Don't have an account? Register";
+        } else {
+            title.textContent = '📝 Create Account';
+            sub.textContent = 'Fill in your details to get started';
+            nameField.style.display = 'block';
+            nameField.placeholder = 'Full Name';
+            submitBtn.textContent = 'Register';
+            switchText.textContent = 'Already have an account? Login';
+        }
+        document.getElementById('authForm').reset();
+    }
+
+    function switchAuth() {
+        openModal(authMode === 'login' ? 'register' : 'login');
+    }
+
+    function handleAuth(e) {
+        e.preventDefault();
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
+        const name = document.getElementById('authName').value;
+
+        if (authMode === 'register') {
+            if (!name.trim()) {
+                showToast('Please enter your full name!', 'error');
+                return false;
+            }
+            localStorage.setItem('dcpay_user', JSON.stringify({
+                name, email, password, tier: 'Not Selected', balance: 5000, commission: 0,
+                transactions: [],
+                accountDetails: { holder: '', bank: '', number: '', confirm: '', ifsc: '', type: 'Savings', card: '', expiry: '' }
+            }));
+            showToast('✅ Registration successful! Please login.', 'success');
+            openModal('login');
+            return false;
+        } else {
+            const stored = localStorage.getItem('dcpay_user');
+            if (!stored) {
+                showToast('❌ No account found! Please register first.', 'error');
+                return false;
+            }
+            const user = JSON.parse(stored);
+            if (user.email === email && user.password === password) {
+                currentUser = user;
+                balance = user.balance || 5000;
+                commission = user.commission || 0;
+                transactions = user.transactions || [];
+                accountDetails = user.accountDetails || { holder: '', bank: '', number: '', confirm: '', ifsc: '', type: 'Savings', card: '', expiry: '' };
+                localStorage.setItem('dcpay_session', 'active');
+                showToast('✅ Welcome back, ' + user.name + '!', 'success');
+                updateUI(user);
+                goToPage('details');
+            } else {
+                showToast('❌ Invalid email or password!', 'error');
+            }
+            return false;
+        }
+    }
+
+    function updateUI(user) {
+        document.getElementById('authButtons').style.display = 'none';
+        document.getElementById('userInfo').style.display = 'flex';
+        document.getElementById('displayName').textContent = '👋 ' + user.name;
+        
+        if (user.accountDetails) {
+            document.getElementById('accHolder').value = user.accountDetails.holder || '';
+            document.getElementById('accBank').value = user.accountDetails.bank || '';
+            document.getElementById('accNumber').value = user.accountDetails.number || '';
+            document.getElementById('accConfirm').value = user.accountDetails.confirm || '';
+            document.getElementById('accIfsc').value = user.accountDetails.ifsc || '';
+            document.getElementById('accType').value = user.accountDetails.type || 'Savings';
+            document.getElementById('accCard').value = user.accountDetails.card || '';
+            document.getElementById('accExpiry').value = user.accountDetails.expiry || '';
+            accountDetails = user.accountDetails;
+        }
+        if (user.tier && user.tier !== 'Not Selected') {
+            selectedTier = user.tier;
+            const tierMap = { 'Savings':5000, 'Current':10000, 'Corporate':15000 };
+            selectedAmount = tierMap[user.tier] || 0;
+            document.getElementById('selectedAmountDisplay').textContent = selectedAmount.toLocaleString();
+            document.getElementById('selectedTierDisplay').textContent = selectedTier;
+            document.getElementById('tierNextBtn').disabled = false;
+        }
+        validateDetails();
+    }
+
+    function logout() {
+        localStorage.removeItem('dcpay_session');
+        currentUser = null;
+        document.getElementById('authButtons').style.display = 'flex';
+        document.getElementById('userInfo').style.display = 'none';
+        stopLiveTransactions();
+        resetAll();
+        goToPage('home');
+        showToast('🔓 Logged out successfully!', 'info');
+    }
+
+    function checkSession() {
+        if (localStorage.getItem('dcpay_session') === 'active') {
+            const stored = localStorage.getItem('dcpay_user');
+            if (stored) {
+                currentUser = JSON.parse(stored);
+                balance = currentUser.balance || 5000;
+                commission = currentUser.commission || 0;
+                transactions = currentUser.transactions || [];
+                accountDetails = currentUser.accountDetails || { holder: '', bank: '', number: '', confirm: '', ifsc: '', type: 'Savings', card: '', expiry: '' };
+                updateUI(currentUser);
+                goToPage('details');
+            }
+        }
+    }
+
+    // ===== VALIDATE ACCOUNT DETAILS =====
+    function validateDetails() {
+        const holder = document.getElementById('accHolder').value.trim();
+        const bank = document.getElementById('accBank').value;
+        const number = document.getElementById('accNumber').value.trim();
+        const confirm = document.getElementById('accConfirm').value.trim();
+        const ifsc = document.getElementById('accIfsc').value.trim().toUpperCase();
+        const btn = document.getElementById('detailsNextBtn');
+        
+        // Validate each field
+        const isHolderValid = holder.length >= 3;
+        const isBankValid = bank !== '';
+        const isNumberValid = /^[0-9]{9,16}$/.test(number);
+        const isConfirmValid = number === confirm && number.length > 0;
+        const isIfscValid = /^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc);
+        
+        // Show/hide valid/invalid styles
+        setFieldValid('accHolder', isHolderValid);
+        setFieldValid('accBank', isBankValid);
+        setFieldValid('accNumber', isNumberValid);
+        setFieldValid('accConfirm', isConfirmValid);
+        setFieldValid('accIfsc', isIfscValid);
+        
+        btn.disabled = !(isHolderValid && isBankValid && isNumberValid && isConfirmValid && isIfscValid);
+    }
+
+    function setFieldValid(id, isValid) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.value.length === 0) {
+            el.className = '';
+            return;
+        }
+        el.className = isValid ? 'valid' : 'invalid';
+    }
+
+    function formatCard(el) {
+        let val = el.value.replace(/\D/g, '');
+        if (val.length > 16) val = val.slice(0, 16);
+        let formatted = '';
+        for (let i = 0; i < val.length; i++) {
+            if (i > 0 && i % 4 === 0) formatted += ' ';
+            formatted += val[i];
+        }
+        el.value = formatted;
+    }
+
+    function formatExpiry(el) {
+        let val = el.value.replace(/\D/g, '');
+        if (val.length > 4) val = val.slice(0, 4);
+        if (val.length > 2) {
+            const month = parseInt(val.slice(0, 2));
+            if (month > 12) val = '12' + val.slice(2);
+            val = val.slice(0, 2) + '/' + val.slice(2);
+        }
+        el.value = val;
+    }
+
+    function saveDetailsAndNext() {
+        accountDetails.holder = document.getElementById('accHolder').value.trim();
+        accountDetails.bank = document.getElementById('accBank').value;
+        accountDetails.number = document.getElementById('accNumber').value.trim();
+        accountDetails.confirm = document.getElementById('accConfirm').value.trim();
+        accountDetails.ifsc = document.getElementById('accIfsc').value.trim().toUpperCase();
+        accountDetails.type = document.getElementById('accType').value;
+        accountDetails.card = document.getElementById('accCard').value.trim();
+        accountDetails.expiry = document.getElementById('accExpiry').value.trim();
+        
+        if (currentUser) {
+            let stored = localStorage.getItem('dcpay_user');
+            if (stored) {
+                let user = JSON.parse(stored);
+                user.accountDetails = accountDetails;
+                localStorage.setItem('dcpay_user', JSON.stringify(user));
+                currentUser = user;
+            }
+        }
+        showToast('✅ Account details saved!', 'success');
+        goToPage('tier');
+    }
+
+    // ===== SELECT TIER =====
+    function selectTier(tier, amount, el) {
+        if (!currentUser) {
+            showToast('❌ Please login first!', 'error');
+            return;
+        }
+        selectedTier = tier;
+        selectedAmount = amount;
+        utrVerified = false;
+        paymentDone = false;
+
+        document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
+        if (el) el.classList.add('selected');
+
+        document.getElementById('selectedAmountDisplay').textContent = amount.toLocaleString();
+        document.getElementById('selectedTierDisplay').textContent = tier;
+        document.getElementById('tierNextBtn').disabled = false;
+
+        let stored = localStorage.getItem('dcpay_user');
+        if (stored) {
+            let user = JSON.parse(stored);
+            user.tier = tier;
+            localStorage.setItem('dcpay_user', JSON.stringify(user));
+            currentUser = user;
+        }
+        showToast('✅ ' + tier + ' Account selected! ₹' + amount.toLocaleString(), 'success');
+    }
+
+    // ===== PAYMENT =====
+    function payWithUPI() {
+        if (!selectedTier || !selectedAmount) {
+            showToast('Please select a tier first!', 'error');
+            return;
+        }
+        const upiId = "Deewuuu01@ptyes";
+        const amount = selectedAmount;
+        const link = 'upi://pay?pa=' + upiId + '&pn=DC%20PAY&am=' + amount + '&cu=INR';
+        const status = document.getElementById('paymentStatus');
+        
+        status.className = 'status-msg show';
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening UPI app for ₹' + amount.toLocaleString() + '...';
+        status.style.background = '#e3f2fd';
+
+        try {
+            window.location.href = link;
+            setTimeout(() => {
+                status.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#e65100;"></i> If UPI didn\'t open, pay <strong>₹' + amount.toLocaleString() + '</strong> to <br><strong style="font-size:1.1rem;">Deewuuu01@ptyes</strong>';
+                status.style.background = '#fff3cd';
+                paymentDone = true;
+                showToast('💳 Pay ₹' + amount.toLocaleString() + ' to Deewuuu01@ptyes', 'info');
+            }, 3000);
+        } catch(e) {
+            status.innerHTML = '<i class="fas fa-info-circle" style="color:#0d47a1;"></i> Pay <strong>₹' + amount.toLocaleString() + '</strong> to <br><strong style="font-size:1.1rem;">Deewuuu01@ptyes</strong>';
+            status.style.background = '#e3f2fd';
+            paymentDone = true;
+            showToast('💳 Pay ₹' + amount.toLocaleString() + ' to Deewuuu01@ptyes', 'info');
+        }
+    }
+
+    function copyUPI() {
+        const t = "Deewuuu01@ptyes";
+        navigator.clipboard.writeText(t).then(() => {
+            showToast('✅ UPI ID copied: ' + t, 'success');
+        }).catch(() => {
+            const a = document.createElement("textarea");
+            a.value = t;
+            document.body.appendChild(a);
+            a.select();
+            document.execCommand("copy");
+            document.body.removeChild(a);
+            showToast('✅ UPI ID copied: ' + t, 'success');
+        });
+    }
+
+    // ===== UTR VERIFICATION =====
+    function validateUTR(v) {
+        const input = document.getElementById('utrInput');
+        const btn = document.getElementById('verifyUtrBtn');
+        const status = document.getElementById('utrStatus');
+        const isValid = /^[0-9]{12,16}$/.test(v);
+
+        if (v.length > 0) {
+            if (isValid) {
+                input.className = 'valid';
+                btn.disabled = false;
+                status.className = 'status-msg';
+                status.style.display = 'none';
+            } else {
+                input.className = 'invalid';
+                btn.disabled = true;
+                status.className = 'status-msg show';
+                status.innerHTML = '<i class="fas fa-times-circle" style="color:#ff4444;"></i> Invalid UTR - please check';
+                status.style.background = '#ffebee';
+                status.style.color = '#c62828';
+            }
+        } else {
+            input.className = '';
+            btn.disabled = true;
+            status.className = 'status-msg';
+            status.style.display = 'none';
+        }
+    }
+
+    function verifyUTR() {
+        const utr = document.getElementById('utrInput').value.trim();
+        const status = document.getElementById('utrStatus');
+
+        if (!/^[0-9]{12,16}$/.test(utr)) {
+            showToast('❌ Invalid UTR! Please check.', 'error');
+            return;
+        }
+
+        status.className = 'status-msg show';
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying UTR...';
+        status.style.background = '#e3f2fd';
+        status.style.color = '#0d47a1';
+
+        setTimeout(() => {
+            utrVerified = true;
+            document.getElementById('paymentNextBtn').disabled = false;
+            status.innerHTML = '<i class="fas fa-check-circle" style="color:#2e7d32;"></i> ✅ UTR <strong>' + utr + '</strong> verified!';
+            status.style.background = '#e8f5e9';
+            status.style.color = '#1e1e2a';
+            document.getElementById('verifyUtrBtn').disabled = true;
+            showToast('✅ UTR Verified Successfully!', 'success');
+
+            // Add deposit transaction
+            addTransaction('Deposit', selectedAmount, 'UPI - ' + selectedTier + ' Account');
+            balance += selectedAmount;
+            commission += Math.round(selectedAmount * 0.05);
+            updateUserData();
+            updateDashboard();
+        }, 2000);
+    }
+
+    // ===== TRANSACTIONS =====
+    function addTransaction(type, amount, note) {
+        transactions.unshift({
+            id: Date.now(),
+            type: type,
+            amount: amount,
+            note: note,
+            time: new Date().toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', second:'2-digit' }),
+            status: 'success'
+        });
+        if (transactions.length > 50) transactions.pop();
+        updateUserData();
+    }
+
+    function updateUserData() {
+        if (currentUser) {
+            let stored = localStorage.getItem('dcpay_user');
+            if (stored) {
+                let user = JSON.parse(stored);
+                user.balance = balance;
+                user.commission = commission;
+                user.transactions = transactions;
+                user.tier = selectedTier || user.tier;
+                user.accountDetails = accountDetails;
+                localStorage.setItem('dcpay_user', JSON.stringify(user));
+                currentUser = user;
+            }
+        }
+    }
+
+    // ===== DASHBOARD =====
+    function updateDashboard() {
+        document.getElementById('dashBalance').textContent = balance.toLocaleString();
+        document.getElementById('dashAvailable').textContent = balance.toLocaleString();
+        document.getElementById('dashTier').textContent = selectedTier || currentUser?.tier || 'Not Selected';
+        document.getElementById('commissionAmount').textContent = commission.toLocaleString();
+        
+        document.getElementById('dashHolder').textContent = accountDetails.holder || currentUser?.name || '-';
+        document.getElementById('dashBank').textContent = accountDetails.bank || '-';
+        document.getElementById('dashAccNo').textContent = accountDetails.number || '-';
+        document.getElementById('dashIfsc').textContent = accountDetails.ifsc || '-';
+        document.getElementById('dashCard').textContent = accountDetails.card || '-';
+        
+        renderTransactions();
+    }
+
+    function renderTransactions() {
+        const container = document.getElementById('transactionList');
+        if (!container) return;
+
+        if (transactions.length === 0) {
+            container.innerHTML = '<div style="text-align:center; color:#888; padding:12px; font-size:0.9rem;"><i class="fas fa-clock" style="font-size:1.2rem; display:block; margin-bottom:5px;"></i>No transactions yet. Waiting for live updates...</div>';
+            return;
+        }
+
+        let html = '';
+        transactions.slice(0, 20).forEach(tx => {
+            const isCredit = tx.type === 'Deposit' || tx.type === 'Refund';
+            const icon = isCredit ? 'fa-arrow-down' : 'fa-arrow-up';
+            const cls = isCredit ? 'credit' : 'debit';
+            const sign = isCredit ? '+' : '-';
+            const color = isCredit ? '#4CAF50' : '#ff4444';
+            const statusClass = tx.status === 'success' ? 'success' : 'pending';
+            const statusText = tx.status === 'success' ? '✅ Success' : '⏳ Pending';
+            html += `
+                <div class="tx-item">
+                    <div class="tx-left">
+                        <i class="fas ${icon} ${cls}"></i>
+                        <div>
+                            <div style="font-weight:600; font-size:0.85rem;">${tx.type}</div>
+                            <div style="font-size:0.7rem; color:#888;">${tx.note || ''}</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="tx-amount" style="color:${color};">${sign}₹${tx.amount.toLocaleString()}</div>
+                        <div style="display:flex; gap:6px; align-items:center; justify-content:flex-end;">
+                            <span class="tx-status ${statusClass}">${statusText}</span>
+                            <span class="tx-time">${tx.time}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+        // Auto scroll to top to show latest
+        container.scrollTop = 0;
+    }
+
+    function refreshDashboard() {
+        updateDashboard();
+        showToast('✅ Dashboard refreshed!', 'success');
+    }
+
+    // ===== WITHDRAW =====
+    function withdrawFunds() {
+        const amount = parseInt(document.getElementById('withdrawAmount').value);
+        const upi = document.getElementById('withdrawUpi').value.trim();
+        const status = document.getElementById('withdrawStatus');
+
+        if (!amount || amount < 100) {
+            showToast('❌ Minimum withdrawal is ₹100!', 'error');
+            status.className = 'status-msg show';
+            status.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#e65100;"></i> Minimum ₹100 required.';
+            status.style.background = '#fff3cd';
+            return;
+        }
+        if (amount > balance) {
+            showToast('❌ Insufficient balance!', 'error');
+            status.className = 'status-msg show';
+            status.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#e65100;"></i> Available: ₹' + balance.toLocaleString();
+            status.style.background = '#fff3cd';
+            return;
+        }
+        if (!upi || upi.length < 5 || !upi.includes('@')) {
+            showToast('❌ Enter valid UPI ID (e.g., name@bank)!', 'error');
+            status.className = 'status-msg show';
+            status.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#e65100;"></i> Please enter a valid UPI ID (e.g., name@bank).';
+            status.style.background = '#fff3cd';
+            return;
+        }
+
+        status.className = 'status-msg show';
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing withdrawal...';
+        status.style.background = '#e3f2fd';
+
+        setTimeout(() => {
+            balance -= amount;
+            addTransaction('Withdrawal', amount, 'To ' + upi);
+            updateUserData();
+            updateDashboard();
+            status.className = 'status-msg show';
+            status.innerHTML = '<i class="fas fa-check-circle" style="color:#2e7d32;"></i> ✅ ₹' + amount.toLocaleString() + ' sent to ' + upi + '!';
+            status.style.background = '#e8f5e9';
+            showToast('✅ ₹' + amount.toLocaleString() + ' withdrawn!', 'success');
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawUpi').value = '';
+        }, 2500);
+    }
+
+    // ===== RESET =====
+    function resetAll() {
+        selectedTier = null;
+        selectedAmount = 0;
+        utrVerified = false;
+        paymentDone = false;
+        document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('selectedAmountDisplay').textContent = '0';
+        document.getElementById('selectedTierDisplay').textContent = 'Select a tier';
+        document.getElementById('utrInput').value = '';
+        document.getElementById('utrInput').className = '';
+        document.getElementById('utrStatus').className = 'status-msg';
+        document.getElementById('utrStatus').style.display = 'none';
+        document.getElementById('paymentStatus').className = 'status-msg';
+        document.getElementById('paymentStatus').style.display = 'none';
+        document.getElementById('verifyUtrBtn').disabled = true;
+        document.getElementById('tierNextBtn').disabled = true;
+        document.getElementById('paymentNextBtn').disabled = true;
+        goToPage('home');
+        if (currentUser) updateDashboard();
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', function() {
+        checkSession();
+        document.getElementById('utrInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !document.getElementById('verifyUtrBtn').disabled) {
+                verifyUTR();
+            }
+        });
+        // Auto-start live transactions if already on dashboard
+        if (document.getElementById('page-dashboard').classList.contains('active')) {
+            startLiveTransactions();
+        }
+    });
+</script>
+
+</body>
+</html>
