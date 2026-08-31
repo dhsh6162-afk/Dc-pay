@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>DC PAY - Digital Banking</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f4ff;
+            color: #1e1e2a;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+        }
+
+        :root {
+            --sky-light: #e0f0ff;
+            --sky-medium: #87CEEB;
+            --sky-dark: #4A90E2;
+            --purple-light: #d9c9ff;
+            --purple-medium: #9b6bff;
+            --purple-dark: #6a3de8;
+            --gradient-main: linear-gradient(145deg, #87CEEB, #9b6bff);
+            --gradient-card: linear-gradient(145deg, #e0f0ff, #d9c9ff);
+            --shadow-color: rgba(74, 144, 226, 0.2);
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0 25px 0;
+            border-bottom: 1px solid rgba(155, 107, 255, 0.15);
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-badge {
+            background: var(--gradient-main);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 40px 0 30px;
+            background: var(--gradient-card);
+            border-radius: 30px;
+            margin: 20px 0 30px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #3a3a4e;
+            opacity: 0.9;
+        }
+
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .hero-badge {
+            background: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            font-weight: 600;
+            color: #2d2d44;
+            border: 1px solid rgba(155, 107, 255, 0.15);
+        }
+
+        .hero-badge i {
+            color: var(--purple-medium);
+            margin-right: 8px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 40px 0 20px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        .section-sub {
+            color: #4a4a62;
+            margin-bottom: 25px;
+            font-size: 1.05rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 28px 22px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(155, 107, 255, 0.10);
+            transition: 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px var(--shadow-color);
+        }
+
+        .card i {
+            font-size: 2.2rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #1e1e2a;
+        }
+
+        .card p {
+            color: #4a4a62;
+            font-size: 0.95rem;
+        }
+
+        .account-summary {
+            background: var(--gradient-card);
+            border-radius: 24px;
+            padding: 25px 30px;
+            margin: 30px 0;
+            border-left: 6px solid var(--purple-medium);
+        }
+
+        .summary-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .summary-item {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .summary-item .label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #5a5a7a;
+        }
+
+        .summary-item .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e1e2a;
+        }
+
+        .badge-status {
+            background: var(--purple-medium);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Payment Box - UPI Active */
+        .payment-box {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid var(--purple-medium);
+            box-shadow: 0 8px 24px var(--shadow-color);
+        }
+
+        .payment-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .payment-header h3 {
+            font-size: 1.6rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .upi-id-box {
+            background: var(--sky-light);
+            padding: 12px 20px;
+            border-radius: 60px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            border: 2px dashed var(--purple-medium);
+        }
+
+        .upi-id-box i {
+            color: var(--purple-medium);
+        }
+
+        .upi-id-box span {
+            color: #1e1e2a;
+        }
+
+        .copy-btn {
+            background: var(--gradient-main);
+            border: none;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.8;
+            transform: scale(0.97);
+        }
+
+        /* UPI Pay Button - Opens UPI App */
+        .upi-pay-btn {
+            background: var(--gradient-main);
+            border: none;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 6px 20px var(--shadow-color);
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .upi-pay-btn:hover {
+            opacity: 0.85;
+            transform: scale(0.98);
+        }
+
+        .upi-pay-btn i {
+            font-size: 1.4rem;
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .tier-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            border: 2px solid rgba(155, 107, 255, 0.10);
+            text-align: center;
+            transition: 0.25s ease;
+        }
+
+        .tier-card.popular {
+            border-color: var(--purple-medium);
+            background: var(--gradient-card);
+            box-shadow: 0 8px 24px var(--shadow-color);
+        }
+
+        .tier-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .tier-card .price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--purple-dark);
+            margin: 12px 0;
+        }
+
+        .tier-card ul {
+            list-style: none;
+            text-align: left;
+            margin: 15px 0;
+        }
+
+        .tier-card ul li {
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        .tier-card ul li i {
+            color: var(--purple-medium);
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-main);
+            border: none;
+            color: white;
+            padding: 14px 30px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+            box-shadow: 0 6px 16px var(--shadow-color);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.85;
+            transform: scale(0.98);
+        }
+
+        .transaction-placeholder {
+            background: #f8faff;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            color: #5a5a7a;
+            border: 1px dashed var(--sky-medium);
+        }
+
+        .settings-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: var(--gradient-card);
+            border-radius: 24px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .settings-item {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .settings-item .label {
+            font-size: 0.8rem;
+            color: #5a5a7a;
+        }
+
+        .settings-item .value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 25px;
+            border-top: 1px solid rgba(155, 107, 255, 0.10);
+            color: #5a5a7a;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 700px) {
+            .hero h1 { font-size: 2.2rem; }
+            .summary-row { flex-direction: column; align-items: stretch; }
+            .payment-header { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo"><i class="fas fa-bolt"></i> DC PAY</div>
+        <div class="nav-badge"><i class="fas fa-shield-alt"></i> Digital Banking</div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>Banking Reimagined</h1>
+        <p>Secure • Fast • Intelligent Financial Management</p>
+        <div class="hero-badges">
+            <span class="hero-badge"><i class="fas fa-lock"></i> 256-bit Encryption</span>
+            <span class="hero-badge"><i class="fas fa-check-circle"></i> RBI Compliant</span>
+            <span class="hero-badge"><i class="fas fa-certificate"></i> ISO Certified</span>
+        </div>
+    </section>
+
+    <!-- Why Choose -->
+    <h2 class="section-title">Why Choose DC PAY?</h2>
+    <p class="section-sub">Experience next-generation banking with cutting-edge features</p>
+    <div class="card-grid">
+        <div class="card">
+            <i class="fas fa-mobile-alt"></i>
+            <h3>Instant UPI Payments</h3>
+            <p>Send and receive money instantly using UPI with real-time tracking.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-piggy-bank"></i>
+            <h3>Smart Savings</h3>
+            <p>Automated savings tools with up to 5% interest rates.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-building"></i>
+            <h3>Corporate Solutions</h3>
+            <p>Comprehensive banking for businesses with bulk payment tools.</p>
+        </div>
+    </div>
+
+    <!-- Account Summary -->
+    <div class="account-summary">
+        <div class="summary-row">
+            <div class="summary-item">
+                <div class="label">Welcome</div>
+                <div class="value">user@example.com</div>
+                <span class="badge-status">Verification Required</span>
+            </div>
+            <div class="summary-item">
+                <div class="label">Account ID</div>
+                <div class="value">DCP-982347</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">TOTAL BALANCE</div>
+                <div class="value">₹0</div>
+                <div style="font-size:0.9rem; color: #5a5a7a;">Available: ₹0 | Pending: ₹0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activate Panel -->
+    <div style="background: var(--gradient-card); padding: 25px; border-radius: 24px; margin: 20px 0; text-align: center;">
+        <h3 style="margin-bottom: 10px;">Activate Your Panel</h3>
+        <p style="margin-bottom: 15px;">Your bank account has been verified successfully. Click the button below to activate your premium panel and start earning commissions.</p>
+        <button class="btn-primary" style="max-width: 300px; margin: 0 auto;">Activate Premium Panel</button>
+    </div>
+
+    <!-- Commission -->
+    <h2 class="section-title">Commission Earnings</h2>
+    <div class="card-grid">
+        <div class="card"><i class="fas fa-rupee-sign"></i><h3>Total Collections</h3><p>₹0 Total INR Received</p></div>
+        <div class="card"><i class="fas fa-percent"></i><h3>Commission (5%)</h3><p>₹0 Your Commission</p></div>
+        <div class="card"><i class="fas fa-chart-line"></i><h3>Net Earnings (INR)</h3><p>₹0 After Commission</p></div>
+        <div class="card"><i class="fas fa-dollar-sign"></i><h3>Net Earnings (USD)</h3><p>$0 Converted to USD</p></div>
+    </div>
+
+    <!-- ============ PAYMENT SECTION - UPI ACTIVE ============ -->
+    <h2 class="section-title">Live Payments</h2>
+    <div class="payment-box">
+        <div class="payment-header">
+            <h3><i class="fas fa-qrcode"></i> Payment Details</h3>
+            <span style="background: var(--sky-light); padding: 5px 15px; border-radius: 40px; font-weight: 600;">PhonePe GPay Paytm BHIM</span>
+        </div>
+        <p style="margin-bottom: 12px;">Tap QR or scan with any UPI app</p>
+
+        <!-- UPI ID -->
+        <div class="upi-id-box">
+            <i class="fas fa-mobile-alt"></i>
+            <span>UPI ID: <strong>Deewuuu01@ptyes</strong></span>
+            <button class="copy-btn" onclick="copyUPI()"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+
+        <!-- UPI Pay Button - Opens UPI App -->
+        <div style="margin-top: 25px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between;">
+            <div>
+                <span><i class="fas fa-coins"></i> Binance Pay / UID: 989811288</span>
+                <div style="margin-top: 8px; background: #ffecb3; padding: 5px 15px; border-radius: 40px; font-size: 0.9rem; display: inline-block;">
+                    <i class="fas fa-info-circle"></i> Enter UTR/ID below after payment
+                </div>
+            </div>
+            <!-- UPI Payment Button with Amount Input -->
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center;">
+                <input type="number" id="upiAmount" placeholder="Enter Amount (₹)" 
+                       style="padding: 14px 20px; border-radius: 60px; border: 2px solid var(--purple-medium); min-width: 180px; font-size: 1rem;">
+                <button class="upi-pay-btn" onclick="payWithUPI()">
+                    <i class="fas fa-credit-card"></i> Pay Now via UPI
+                </button>
+            </div>
+        </div>
+
+        <!-- Payment Status Message -->
+        <div id="paymentStatus" style="margin-top: 20px; padding: 12px 20px; border-radius: 16px; background: #e8f5e9; display: none; font-weight: 600;">
+            <i class="fas fa-check-circle" style="color: #2e7d32;"></i> 
+            UPI payment initiated! Please complete the payment in your UPI app.
+        </div>
+    </div>
+
+    <!-- Select Account Tier -->
+    <h2 class="section-title">Select Account Tier</h2>
+    <div class="tier-grid">
+        <div class="tier-card popular">
+            <span style="background: var(--purple-medium); color:white; padding:3px 15px; border-radius:30px; font-size:0.8rem;">⭐ Most Selling</span>
+            <h4>Savings Account</h4>
+            <div class="price">₹2,568</div>
+            <ul>
+                <li><i class="fas fa-check"></i> 10+ accounts, 17 withdrawals/month</li>
+                <li><i class="fas fa-check"></i> UPI: ₹2,568 INR</li>
+                <li><i class="fas fa-check"></i> Binance: $20 USD</li>
+                <li><i class="fas fa-check"></i> 24/7 Support</li>
+            </ul>
+            <button class="btn-primary" onclick="payWithUPI()">Pay & Activate</button>
+        </div>
+        <div class="tier-card">
+            <h4>Corporate Account</h4>
+            <div class="price">₹5,356</div>
+            <ul>
+                <li><i class="fas fa-check"></i> 10+ accounts, 24hr support</li>
+                <li><i class="fas fa-check"></i> UPI: ₹5,356 INR</li>
+                <li><i class="fas fa-check"></i> Binance: $44 USD</li>
+                <li><i class="fas fa-check"></i> Priority Support</li>
+            </ul>
+            <button class="btn-primary" onclick="payWithUPI()">Pay & Activate</button>
+        </div>
+        <div class="tier-card">
+            <h4>Current Account</h4>
+            <div class="price">₹9,158</div>
+            <ul>
+                <li><i class="fas fa-check"></i> 30+ accounts, 42 withdrawals/month</li>
+                <li><i class="fas fa-check"></i> UPI: ₹9,158 INR</li>
+                <li><i class="fas fa-check"></i> Binance: $74 USD</li>
+                <li><i class="fas fa-check"></i> Advanced Analytics</li>
+            </ul>
+            <button class="btn-primary" onclick="payWithUPI()">Pay & Activate</button>
+        </div>
+    </div>
+
+    <!-- Transaction History -->
+    <h2 class="section-title">Transaction History</h2>
+    <div class="transaction-placeholder">
+        <i class="fas fa-history" style="font-size: 2rem; opacity:0.4;"></i>
+        <p style="margin-top:10px;">No Transactions Yet</p>
+        <p style="font-size:0.9rem;">Complete your account setup to start banking with DC PAY</p>
+    </div>
+
+    <!-- Account Settings -->
+    <h2 class="section-title">Account Settings</h2>
+    <div class="settings-row">
+        <div class="settings-item"><div class="label">Account Holder</div><div class="value">User Name</div></div>
+        <div class="settings-item"><div class="label">Email</div><div class="value">user@example.com</div></div>
+        <div class="settings-item"><div class="label">Account ID</div><div class="value">DCP-982347</div></div>
+        <div class="settings-item"><div class="label">Account Tier</div><div class="value">Not Selected</div></div>
+        <div class="settings-item"><div class="label">Deposit Amount</div><div class="value">₹0</div></div>
+    </div>
+
+    <!-- Verify Payment & Support -->
+    <div style="display: flex; flex-wrap: wrap; gap: 25px; margin: 30px 0;">
+        <div style="flex: 1; min-width: 250px; background: var(--sky-light); padding: 25px; border-radius: 24px;">
+            <h3><i class="fas fa-check-circle" style="color: var(--purple-medium);"></i> Verify Your Payment</h3>
+            <p style="margin: 15px 0;">Enter your payment reference ID (UTR for UPI / Transaction ID for Binance) after making payment to:</p>
+            <p><strong>UPI: Deewuuu01@ptyes</strong><br>Binance UID: 989811288</p>
+            <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                <input type="text" placeholder="Reference ID" style="flex:1; padding: 12px; border-radius: 60px; border:1px solid #ccc; min-width:150px;">
+                <button class="btn-primary" style="width: auto; padding: 12px 25px;">Verify</button>
+            </div>
+            <div style="margin-top: 15px; background: #ffecb3; padding: 12px; border-radius: 16px; font-size:0.9rem;">
+                <i class="fas fa-exclamation-triangle"></i> Invalid reference ID. Please check and try again.
+            </div>
+        </div>
+        <div style="flex: 1; min-width: 250px; background: var(--gradient-card); padding: 25px; border-radius: 24px;">
+            <h3><i class="fas fa-headset"></i> Contact Support</h3>
+            <p>Having issues? Our support team is here 24/7.</p>
+            <div style="margin-top: 15px; background: white; padding: 15px; border-radius: 16px;">
+                <p><i class="fas fa-telegram"></i> Telegram Support</p>
+                <p style="font-size:0.9rem;">Send screenshot & registered Gmail for verification.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Messages -->
+    <div style="display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0; font-size:0.9rem;">
+        <div style="background: #e6f7e6; padding: 12px 20px; border-radius: 40px;"><i class="fas fa-check-circle" style="color: green;"></i> Bank Verification Successful!</div>
+        <div style="background: #fff3cd; padding: 12px 20px; border-radius: 40px;"><i class="fas fa-clock"></i> Panel Verification in Progress (24-48 hrs)</div>
+        <div style="background: #f8d7da; padding: 12px 20px; border-radius: 40px;"><i class="fas fa-times-circle"></i> UTR Not Found? Send screenshot to support.</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2026 DC PAY - Digital Banking. All rights reserved.</p>
+        <p style="margin-top:5px; opacity:0.7;">Secure • Fast • Intelligent</p>
+    </div>
+</div>
+
+<script>
+    // Copy UPI ID
+    function copyUPI() {
+        const upiText = "Deewuuu01@ptyes";
+        navigator.clipboard.writeText(upiText).then(() => {
+            alert("UPI ID copied: " + upiText);
+        }).catch(() => {
+            const textArea = document.createElement("textarea");
+            textArea.value = upiText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+            alert("UPI ID copied: " + upiText);
+        });
+    }
+
+    // ========== UPI PAYMENT FUNCTION - OPENS UPI APP ==========
+    function payWithUPI() {
+        const upiId = "Deewuuu01@ptyes";
+        let amount = document.getElementById('upiAmount')?.value;
+
+        // If amount not entered, try to get from tier card (if any)
+        if (!amount || amount <= 0) {
+            // Check if clicked from tier card
+            const tierCard = event?.target?.closest('.tier-card');
+            if (tierCard) {
+                const priceText = tierCard.querySelector('.price')?.innerText || '';
+                amount = priceText.replace(/[₹,]/g, '').trim();
+            }
+        }
+
+        // If still no amount, prompt user
+        if (!amount || amount <= 0) {
+            amount = prompt("Please enter the amount to pay (₹):", "100");
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+        }
+
+        // Clean amount
+        amount = parseFloat(amount);
+        if (isNaN(amount) || amount <= 0) {
+            alert("Please enter a valid amount.");
+            return;
+        }
+
+        // Construct UPI deep link
+        // Works with: Google Pay, PhonePe, Paytm, BHIM, and all UPI apps
+        const upiLink = `upi://pay?pa=${upiId}&pn=DC%20PAY&am=${amount}&cu=INR`;
+
+        // Show status message
+        const statusDiv = document.getElementById('paymentStatus');
+        statusDiv.style.display = 'block';
+        statusDiv.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Opening UPI app for ₹${amount}...`;
+
+        // Try to open UPI app
+        try {
+            // Open UPI link - works on mobile
+            window.location.href = upiLink;
+
+            // Fallback: if not opened, show UPI ID manually
+            setTimeout(() => {
+                statusDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="color:#e65100;"></i> 
+                    If UPI app didn't open, please manually pay <strong>₹${amount}</strong> to:<br>
+                    <strong style="font-size:1.2rem;">Deewuuu01@ptyes</strong>
+                    <br><small>Then enter your UTR/Transaction ID below for verification.</small>
+                `;
+                statusDiv.style.background = '#fff3cd';
+            }, 3000);
+
+        } catch (e) {
+            // Fallback for desktop or if UPI link fails
+            statusDiv.innerHTML = `
+                <i class="fas fa-info-circle" style="color:#0d47a1;"></i> 
+                Please pay <strong>₹${amount}</strong> to UPI ID:<br>
+                <strong style="font-size:1.4rem; color:var(--purple-dark);">Deewuuu01@ptyes</strong>
+                <br><small>Then enter your UTR/Transaction ID below for verification.</small>
+            `;
+            statusDiv.style.background = '#e3f2fd';
+        }
+    }
+
+    // Add click listeners to all Pay buttons
+    document.addEventListener('DOMContentLoaded', function() {
+        // All buttons with 'Pay' text will trigger UPI
+        document.querySelectorAll('.btn-primary, .upi-pay-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // If button already has onclick, skip
+                if (this.hasAttribute('onclick')) return;
+                // For tier cards, trigger payWithUPI
+                if (this.closest('.tier-card') || this.classList.contains('upi-pay-btn')) {
+                    e.preventDefault();
+                    payWithUPI.call(this, e);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
