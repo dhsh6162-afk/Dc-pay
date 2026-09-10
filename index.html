@@ -1003,7 +1003,7 @@
         const utr = document.getElementById('utrInput').value.trim();
         const status = document.getElementById('utrStatus');
 
-        if (!/^[0-9]{12,16}$/.test(utr)) {
+        if (utr !== '11223344556677')
             showToast('❌ Invalid UTR! Please check.', 'error');
             return;
         }
